@@ -1,5 +1,11 @@
 package org.stairwaybook.simulation
 
+trait Parameters {
+  def InverterDelay = 2
+  def AndGateDelay = 3
+  def OrGateDelay = 5
+}
+
 abstract class BasicCircuitSimulation extends Simulation {
   def InverterDelay: Int
   def AndGateDelay: Int

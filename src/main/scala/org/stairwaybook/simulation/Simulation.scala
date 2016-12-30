@@ -15,9 +15,30 @@ abstract class Simulation {
     else ag.head :: insert(ag.tail, item)
   }
 
+  private def insertNew(ag: List[WorkItem], item: WorkItem): List[WorkItem] = ag match {
+    case first :: rest if first.time <= item.time =>
+      first :: insert(rest, item)
+    case _ =>
+      item :: ag
+  }
+
   def afterDelay(delay: Int)(block: => Unit) {
     val item = WorkItem(currentTime + delay, () => block)
     agenda = insert(agenda, item)
+  }
+
+  def afterDelayNew(delay: Int)(block: => Unit) {
+    val item = WorkItem(currentTime + delay, () => block)
+    agenda = insertNew(agenda, item)
+  }
+
+  private def loop(): Unit = agenda match {
+    case first :: rest =>
+      agenda = rest
+      curtime = first.time
+      first.action()
+      loop()
+    case Nil =>
   }
 
   private def next() {
@@ -31,8 +52,16 @@ abstract class Simulation {
 
   def run() {
     afterDelay(0) {
-      println("*** simulation started, time = "+ currentTime + " ***")
+      println("*** simulation started, time = " + currentTime + " ***")
     }
     while (!agenda.isEmpty) next()
   }
+
+  def runNew() {
+    afterDelayNew(0) {
+      println("*** simulation started, time = " + currentTime + " ***")
+    }
+    loop()
+  }
+
 }
